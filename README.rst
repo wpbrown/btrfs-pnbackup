@@ -50,6 +50,24 @@ Setup
 
 * when using ssh, public/private key authentication should be set up
 
+Non-root SSH
+------------
+It is normally assumed that you are sshing to the root user of a remote host. Using a nonroot user requires some extra setup.
+
+* on the machine running btrfs-sxbackup
+
+  * create an ssh key pair for the root user (i.e. in /root/.ssh)
+  * when initing the remote with btrfs-sxbackup, use the user name created on the remote host below
+  
+* on the remote host
+
+  * create a user for the machine running btrfs-sxbackup to login in to. copy the root users public key created above to the authorized_keys of this new user
+  * disable password login for the new user
+  * install backup_root.py in the path of the root user (i.e. /usr/local/sbin/backup_root)
+  * use visudo to edit and save sudoers in to your system configuration (i.e. /etc/sudoers.d/backup_root)
+  * copy backup_root.conf to /etc/backup_root.conf. add the user created above to this configruation
+  * create additional users for other machines running btrfs-sxbackup in your environment
+
 Known limitations
 =================
 
