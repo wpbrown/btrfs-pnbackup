@@ -1,0 +1,17 @@
+# btrfs-sxbackup remote backup enablement.
+# This allows the remote backup users to run a strictly limited
+# set of commands as root. The users must also be granted access
+# in /etc/backup_root.conf.
+#
+# This file should be saved to /etc/sudoers.d/backup or merged
+# into /etc/sudoers using visudo. Change the users and host for
+# your environment.
+
+User_Alias    REMOTE_BACKUP_USERS = backupbart, backuplisa
+Host_Alias    REMOTE_BACKUP_HOST  = homer
+Cmnd_Alias    REMOTE_BACKUP_CMND  = /usr/local/sbin/backup_root
+
+Defaults!REMOTE_BACKUP_CMND       !authenticate
+Defaults!REMOTE_BACKUP_CMND       env_reset
+
+REMOTE_BACKUP_USERS REMOTE_BACKUP_HOST = (root) REMOTE_BACKUP_CMND

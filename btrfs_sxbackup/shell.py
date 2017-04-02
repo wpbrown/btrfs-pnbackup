@@ -7,6 +7,7 @@
 
 import subprocess
 import logging
+import re
 
 
 _logger = logging.getLogger(__name__)
@@ -30,6 +31,9 @@ def build_subprocess_args(cmd, url=None):
         url_string = url.hostname
         if url.username is not None:
             url_string = '%s@%s' % (url.username, url.hostname)
+            if url.username is not 'root':
+                cmd[0] = re.sub(r'(?:^|\s)(mv|btrfs)\s', r' sudo backup_root \1 ', cmd[0])
+
 
     subprocess_args = ['bash', '-c'] + cmd if url_string is None else \
         ['ssh', '-o', 'ServerAliveInterval=5', '-o', 'ServerAliveCountMax=3', '%s'
