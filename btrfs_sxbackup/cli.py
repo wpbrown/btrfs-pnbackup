@@ -80,6 +80,8 @@ p_init.add_argument('source_subvolume', type=str, metavar='source-subvolume',
                     help='source subvolume tobackup. local path or ssh url')
 p_init.add_argument('destination_subvolume', type=str, metavar='destination-subvolume', nargs='?', default=None,
                     help='optional destination subvolume receiving backup snapshots. local path or ssh url')
+p_init.add_argument('-sc', '--source-container', type=str, default=None,
+                    help='relative path from source to source snapshot container volume')
 p_init.add_argument(*source_retention_args, **source_retention_kwargs)
 p_init.add_argument(*destination_retention_args, **destination_retention_kwargs)
 p_init.add_argument(*compress_args, **compress_kwargs)
@@ -223,6 +225,7 @@ def main():
             source_retention = RetentionExpression(args.source_retention) if args.source_retention else None
             destination_retention = RetentionExpression(args.destination_retention) if args.destination_retention else None
             job = Job.init(source_url=urllib.parse.urlsplit(args.source_subvolume),
+                           source_container_relpath=args.source_container,
                            source_retention=source_retention,
                            dest_url=urllib.parse.urlsplit(args.destination_subvolume) if args.destination_subvolume
                            else None,

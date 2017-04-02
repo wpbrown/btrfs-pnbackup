@@ -615,7 +615,7 @@ class JobLocation(Location):
             self.is_remote() ^ (corresponding_location is not None and corresponding_location.is_remote()))
 
         if self.location_type == JobLocation.TYPE_SOURCE:
-            if both_remote_or_local:
+            if both_remote_or_local or not self.is_remote():
                 source = self.url.geturl()
                 source_container = self.container_subvolume_relpath
 
@@ -707,16 +707,9 @@ class JobLocation(Location):
             else False
 
         if location_type == JobLocation.TYPE_SOURCE:
-            # Amend url/container relpath from current path for source locations
-            # if container relative path was not provided
+            # If relpath is not set, this location was initialized from a path to a container subvolume.
+            # Set source url based on the source read from the configuration.
             if not self.container_subvolume_relpath:
-                source_container = os.path.basename(self.container_subvolume_path.rstrip(os.path.sep))
-                source = parse.SplitResult(scheme=self.url.scheme,
-                                           netloc=self.url.netloc,
-                                           path=os.path.abspath(os.path.join(self.url.path, os.path.pardir)),
-                                           query=self.url.query,
-                                           fragment=None)
-
                 self.url = source
                 self.container_subvolume_relpath = source_container
 
@@ -766,6 +759,7 @@ class Job:
     @staticmethod
     def init(source_url: parse.SplitResult,
              dest_url: parse.SplitResult,
+             source_container_relpath: str,
              source_retention: RetentionExpression = None,
              dest_retention: RetentionExpression = None,
              compress: bool = None) -> 'Job':
@@ -779,7 +773,8 @@ class Job:
         :return: Backup job
         :rtype: Job
         """
-        source = JobLocation(source_url, location_type=JobLocation.TYPE_SOURCE)
+        source = JobLocation(source_url, location_type=JobLocation.TYPE_SOURCE,
+                             container_subvolume_relpath=source_container_relpath)
         dest = JobLocation(dest_url, location_type=JobLocation.TYPE_DESTINATION) if dest_url else None
 
         if source.has_configuration():
