@@ -115,6 +115,9 @@ def main():
     btrfs_receive_parser.add_argument('target', type=pathlib.Path)
     btrfs_receive_parser.set_defaults(func=cmd_btrfs_receive)
 
+    btrfs_version_parser = btrfs_subparsers.add_parser('version')
+    btrfs_version_parser.set_defaults(func=lambda _,__: ('btrfs', 'version'))
+
     # Check usage
     if os.geteuid() != 0 or 'SUDO_USER' not in os.environ:
         cmd_parser.error("backup_root is only meant to be run as root via sudo.")
