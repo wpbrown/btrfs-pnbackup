@@ -136,6 +136,9 @@ init
 
     optional arguments:
       -h, --help            show this help message and exit
+      -sc SOURCE_CONTAINER, --source-container SOURCE_CONTAINER
+                            relative path from source to source snapshot container
+                            volume
       -sr SOURCE_RETENTION, --source-retention SOURCE_RETENTION
                             expression defining which source snapshots to
                             retain/cleanup. can be a static number (of backups) or
