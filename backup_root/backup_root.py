@@ -65,9 +65,15 @@ def cmd_mv(auth: Authorization, args: argparse.Namespace):
     return ('mv', str(args.source), str(args.destination))
 
 
-def cmd_btrfs_subvolume_create_delete(auth: Authorization, args: argparse.Namespace):
+def cmd_btrfs_subvolume_create(auth: Authorization, args: argparse.Namespace):
     auth.assert_path_allowed(args.target)
-    return ('btrfs', 'subvolume', args.subcommand, str(args.target))
+    return ('btrfs', 'subvolume', 'create', str(args.target))
+
+
+def cmd_btrfs_subvolume_delete(auth: Authorization, args: argparse.Namespace):
+    for target in args.target:
+        auth.assert_path_allowed(target)
+    return ('btrfs', 'subvolume', 'delete', *(str(target) for target in args.target))
 
 
 def cmd_btrfs_subvolume_show(auth: Authorization, args: argparse.Namespace):
@@ -99,9 +105,12 @@ def main():
     btrfs_subparsers = btrfs_parser.add_subparsers()
     btrfs_subvolume_parser = btrfs_subparsers.add_parser('subvolume', aliases=['sub'])  # type: argparse.ArgumentParser
     btrfs_subvolume_subparsers = btrfs_subvolume_parser.add_subparsers(dest='subcommand')
-    btrfs_subvolume_create_parser = btrfs_subvolume_subparsers.add_parser('create', aliases=['delete', 'del'])
+    btrfs_subvolume_create_parser = btrfs_subvolume_subparsers.add_parser('create')
     btrfs_subvolume_create_parser.add_argument('target', type=pathlib.Path)
-    btrfs_subvolume_create_parser.set_defaults(func=cmd_btrfs_subvolume_create_delete)
+    btrfs_subvolume_create_parser.set_defaults(func=cmd_btrfs_subvolume_create)
+    btrfs_subvolume_delete_parser = btrfs_subvolume_subparsers.add_parser('delete', aliases=['del'])
+    btrfs_subvolume_delete_parser.add_argument('target', type=pathlib.Path, nargs='+')
+    btrfs_subvolume_delete_parser.set_defaults(func=cmd_btrfs_subvolume_delete)
     btrfs_subvolume_show_parser = btrfs_subvolume_subparsers.add_parser('show')
     btrfs_subvolume_show_parser.add_argument('target', type=pathlib.Path)
     btrfs_subvolume_show_parser.set_defaults(func=cmd_btrfs_subvolume_show)
@@ -114,6 +123,9 @@ def main():
     btrfs_receive_parser.add_argument('-C', '--chroot')
     btrfs_receive_parser.add_argument('target', type=pathlib.Path)
     btrfs_receive_parser.set_defaults(func=cmd_btrfs_receive)
+
+    btrfs_version_parser = btrfs_subparsers.add_parser('version')
+    btrfs_version_parser.set_defaults(func=lambda _,__: ('btrfs', 'version'))
 
     # Check usage
     if os.geteuid() != 0 or 'SUDO_USER' not in os.environ:
