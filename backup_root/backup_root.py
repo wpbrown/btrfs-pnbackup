@@ -134,7 +134,7 @@ def main():
     # Execute
     authorization = Authorization()
     args = cmd_parser.parse_args()
-    if args.func is None:
+    if not hasattr(args, 'func'):
         cmd_parser.print_usage()
         cmd_parser.exit(1)
 
