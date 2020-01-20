@@ -25,19 +25,22 @@ def build_subprocess_args(cmd, url=None):
     cmd = cmd if isinstance(cmd, list) else [cmd]
     # wrap into bash or ssh command respectively
     # depending if command is executed locally (host==None) or remotely
-
     url_string = None
+    ssh_args = ['ssh', '-o', 'ServerAliveInterval=5', '-o', 'ServerAliveCountMax=3']
+
     if url is not None and url.hostname is not None:
         url_string = url.hostname
         if url.username is not None:
             url_string = '%s@%s' % (url.username, url.hostname)
             if url.username is not 'root':
                 cmd[0] = re.sub(r'(?:^|\s)(mv|btrfs)\s', r' sudo backup_root \1 ', cmd[0])
+        if url.port is not None:
+            ssh_args += ['-p', '%s' % url.port]
 
+    ssh_args += ['%s' % url_string]
 
     subprocess_args = ['bash', '-c'] + cmd if url_string is None else \
-        ['ssh', '-o', 'ServerAliveInterval=5', '-o', 'ServerAliveCountMax=3', '%s'
-         % url_string] + cmd
+        ssh_args + cmd
 
     _logger.debug(subprocess_args)
 
