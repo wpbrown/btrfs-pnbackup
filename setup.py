@@ -10,7 +10,6 @@
 import sys
 import glob
 import os
-import sphinx
 import shutil
 from setuptools import setup
 from setuptools.command.sdist import sdist
@@ -23,6 +22,8 @@ DOC_MAN_PATH = './docs/man'
 class CustomSdist(sdist):
     """ Custom setuptools sdist command class """
     def run(self):
+        import sphinx
+        
         input_dir = './docs/sphinx'
         build_doctree_dir = './build/doctrees'
         build_output_dir = './build/man'
