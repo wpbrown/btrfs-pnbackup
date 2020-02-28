@@ -144,7 +144,7 @@ init
 
 .. code ::
 
-    usage: btrfs-sxbackup init [-h] [-sr SOURCE_RETENTION]
+    usage: btrfs-sxbackup init [-h] [-sc SOURCE_CONTAINER] [-sr SOURCE_RETENTION]
                                [-dr DESTINATION_RETENTION] [-c]
                                source-subvolume destination-subvolume
 
