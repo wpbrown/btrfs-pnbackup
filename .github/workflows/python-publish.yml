@@ -21,7 +21,7 @@ jobs:
         pip install setuptools wheel
     - name: Build and publish
       run: |
-        python setup.py sdist bdist_wheel
+        python setup.py bdist_wheel
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2
       with:
