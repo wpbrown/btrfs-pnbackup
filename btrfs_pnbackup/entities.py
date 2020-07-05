@@ -12,7 +12,7 @@ import os
 from datetime import datetime
 from datetime import timezone
 
-from btrfs_sxbackup import shell
+from btrfs_pnbackup import shell
 
 import logging
 
@@ -20,7 +20,7 @@ _logger = logging.getLogger(__name__)
 
 class SnapshotName:
     """
-    sxbackup snapshot name
+    pnbackup snapshot name
     """
 
     __regex = re.compile('^sx-([0-9]{4})([0-9]{2})([0-9]{2})-([0-9]{2})([0-9]{2})([0-9]{2})-utc$', re.IGNORECASE)
@@ -127,7 +127,7 @@ class Subvolume(object):
 
 class Snapshot:
     """
-    sxbackup snapshot
+    pnbackup snapshot
     """
 
     def __init__(self, name: SnapshotName, subvolume):

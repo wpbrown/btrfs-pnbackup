@@ -17,18 +17,18 @@ from configparser import ConfigParser
 from uuid import UUID
 from urllib import parse
 
-from btrfs_sxbackup.entities import Snapshot
-from btrfs_sxbackup.entities import SnapshotName
-from btrfs_sxbackup.entities import Filesystem
-from btrfs_sxbackup.retention import RetentionExpression
-from btrfs_sxbackup import shell
-from btrfs_sxbackup.entities import Subvolume
+from btrfs_pnbackup.entities import Snapshot
+from btrfs_pnbackup.entities import SnapshotName
+from btrfs_pnbackup.entities import Filesystem
+from btrfs_pnbackup.retention import RetentionExpression
+from btrfs_pnbackup import shell
+from btrfs_pnbackup.entities import Subvolume
 
 
 _logger = logging.getLogger(__name__)
 _DEFAULT_RETENTION_SOURCE = RetentionExpression('3')
 _DEFAULT_RETENTION_DESTINATION = RetentionExpression('2d: 1/d, 2w:3/w, 1m:1/w, 2m:none')
-_DEFAULT_CONTAINER_RELPATH = '.sxbackup'
+_DEFAULT_CONTAINER_RELPATH = '.pnbackup'
 
 
 class Error(Exception):
@@ -36,11 +36,11 @@ class Error(Exception):
 
 
 class Configuration:
-    """ btrfs-sxbackup global configuration file """
+    """ btrfs-pnbackup global configuration file """
 
     __instance = None
 
-    __CONFIG_FILENAME = '/etc/btrfs-sxbackup.conf'
+    __CONFIG_FILENAME = '/etc/btrfs-pnbackup.conf'
 
     __SECTION_NAME = 'Default'
     __KEY_SOURCE_RETENTION = 'source-retention'
@@ -345,7 +345,7 @@ class JobLocation(Location):
     """
     Backup job location
     """
-    __CONFIG_FILENAME = '.btrfs-sxbackup'
+    __CONFIG_FILENAME = '.btrfs-pnbackup'
     __TEMP_BASENAME = '.temp'
 
     # Configuration file keys

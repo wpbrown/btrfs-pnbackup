@@ -26,5 +26,5 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         # Artifact name
-        name: btrfs-sxbackup-dist
+        name: btrfs-pnbackup-dist
         path: dist/*

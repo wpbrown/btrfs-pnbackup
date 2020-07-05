@@ -5,6 +5,6 @@
 # Software Foundation; either version 2 of the License, or (at your option)
 # any later version.
 
-from btrfs_sxbackup.cli import main 
+from btrfs_pnbackup.cli import main 
 
 main()

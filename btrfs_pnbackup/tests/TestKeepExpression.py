@@ -13,8 +13,8 @@ from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
 
-from btrfs_sxbackup.entities import SnapshotName
-from btrfs_sxbackup.retention import RetentionExpression
+from btrfs_pnbackup.entities import SnapshotName
+from btrfs_pnbackup.retention import RetentionExpression
 
 
 class TestKeepExpression(unittest.TestCase):

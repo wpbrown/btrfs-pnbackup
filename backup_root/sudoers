@@ -1,4 +1,4 @@
-# btrfs-sxbackup remote backup enablement.
+# btrfs-pnbackup remote backup enablement.
 # This allows the remote backup users to run a strictly limited
 # set of commands as root. The users must also be granted access
 # in /etc/backup_root.conf.

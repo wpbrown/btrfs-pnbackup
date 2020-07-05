@@ -7,7 +7,7 @@
 
 import unittest
 
-from btrfs_sxbackup.entities import SnapshotName
+from btrfs_pnbackup.entities import SnapshotName
 
 
 class TestSnapshotName(unittest.TestCase):

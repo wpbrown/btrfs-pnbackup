@@ -18,7 +18,7 @@ def send(recipient, subject, content):
 
     # Prepare mail
     msg = MIMEText(content)
-    msg['From'] = '%s@%s' % ('btrfs-sxbackup', socket.getfqdn(socket.gethostname()))
+    msg['From'] = '%s@%s' % ('btrfs-pnbackup', socket.getfqdn(socket.gethostname()))
     msg['To'] = recipient
     msg['Subject'] = subject
 

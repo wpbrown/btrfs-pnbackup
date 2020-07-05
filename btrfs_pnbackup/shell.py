@@ -32,7 +32,7 @@ def build_subprocess_args(cmd, url=None):
         url_string = url.hostname
         if url.username is not None:
             url_string = '%s@%s' % (url.username, url.hostname)
-            if url.username is not 'root':
+            if url.username != 'root':
                 cmd[0] = re.sub(r'(?:^|\s)(mv|btrfs)\s', r' sudo backup_root \1 ', cmd[0])
         if url.port is not None:
             ssh_args += ['-p', '%s' % url.port]

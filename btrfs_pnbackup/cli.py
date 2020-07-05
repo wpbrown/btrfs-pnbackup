@@ -13,14 +13,14 @@ import urllib.parse
 from argparse import ArgumentParser
 from subprocess import CalledProcessError
 
-from btrfs_sxbackup.core import Location
-from btrfs_sxbackup.core import Job
-from btrfs_sxbackup.core import Configuration
-from btrfs_sxbackup.retention import RetentionExpression
-from btrfs_sxbackup import mail
-from btrfs_sxbackup import __version__
+from btrfs_pnbackup.core import Location
+from btrfs_pnbackup.core import Job
+from btrfs_pnbackup.core import Configuration
+from btrfs_pnbackup.retention import RetentionExpression
+from btrfs_pnbackup import mail
+from btrfs_pnbackup import __version__
 
-_APP_NAME = 'btrfs-sxbackup'
+_APP_NAME = 'btrfs-pnbackup'
 
 _CMD_INIT = 'init'
 _CMD_UPDATE = 'update'
@@ -105,7 +105,7 @@ p_run = subparsers.add_parser(_CMD_RUN, help='run backup job')
 p_run.add_argument(*subvolumes_args, **subvolumes_kwargs)
 p_run.add_argument('-m', '--mail', type=str, nargs='?', const='',
                    help='enables email notifications. If an email address is given, it overrides the'
-                        ' default email-recipient setting in /etc/btrfs-sxbackup.conf')
+                        ' default email-recipient setting in /etc/btrfs-pnbackup.conf')
 p_run.add_argument('-li', '--log-ident', dest='log_ident', type=str, default=None,
                    help='log ident used for syslog logging, defaults to script name')
 

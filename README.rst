@@ -1,4 +1,4 @@
-btrfs-sxbackup
+btrfs-pnbackup
 ##############
 
 Btrfs snapshot backup utility
@@ -43,7 +43,7 @@ Installation
 
 .. code ::
 
-    pip3 install btrfs-sxbackup
+    pip3 install btrfs-pnbackup
 
 Setup
 =====
@@ -54,26 +54,26 @@ Non-root SSH
 ------------
 It is normally assumed that you are sshing to the root user of a remote host. Using a nonroot user requires some extra setup.
 
-* on the machine running btrfs-sxbackup
+* on the machine running btrfs-pnbackup
 
   * create an ssh key pair for the root user (i.e. in /root/.ssh)
-  * when initing the remote with btrfs-sxbackup, use the user name created on the remote host below
+  * when initing the remote with btrfs-pnbackup, use the user name created on the remote host below
   
 * on the remote host
 
-  * create a user for the machine running btrfs-sxbackup to login in to. copy the root users public key created above to the authorized_keys of this new user
+  * create a user for the machine running btrfs-pnbackup to login in to. copy the root users public key created above to the authorized_keys of this new user
   * disable password login for the new user
   * install backup_root.py in the path of the root user (i.e. /usr/local/sbin/backup_root)
   * use visudo to edit and save sudoers in to your system configuration (i.e. /etc/sudoers.d/backup_root)
   * copy backup_root.conf to /etc/backup_root.conf. add the user created above to this configruation
-  * create additional users for other machines running btrfs-sxbackup in your environment
+  * create additional users for other machines running btrfs-pnbackup in your environment
 
 Known limitations
 =================
 
 * the destination filesystem has to be mounted without the subvol option, otherwise an error will occur on btrfs receive prompting you to remount with fs tree
 
-* some commands (like *update*) may not be available for backup jobs created with older versions of btrfs-sxbackup. in this case backup jobs can be recreated using *destroy* and *init*. existing snapshots will be kept as long as *destroy* is **not** invoked with *--purge*.
+* some commands (like *update*) may not be available for backup jobs created with older versions of btrfs-pnbackup. in this case backup jobs can be recreated using *destroy* and *init*. existing snapshots will be kept as long as *destroy* is **not** invoked with *--purge*.
 
 Usage examples
 ==============
@@ -85,13 +85,13 @@ Initialize a backup job pulling snapshots of subvolume **/** on remote host **my
 
 .. code ::
 
-    btrfs-sxbackup init ssh://root@myhost.org:port/ /backup/myhost
+    btrfs-pnbackup init ssh://root@myhost.org:port/ /backup/myhost
 
 Initialize a backup job pushing snapshots of local subvolume **/** to remote subvolume **/backup/myhost** on host **mybackupserver.org**
 
 .. code ::
 
-    btrfs-sxbackup init / ssh://root@mybackupserver.org:port/backup/myhost
+    btrfs-pnbackup init / ssh://root@mybackupserver.org:port/backup/myhost
     
 note that in the ssh:// URL, the username and port part are optional; if not specified, the defaults will be used.
 
@@ -102,7 +102,7 @@ Run a backup job
 
 .. code ::
 
-    btrfs-sxbackup run /backup/myhost
+    btrfs-pnbackup run /backup/myhost
 
 Cron
 ----
@@ -111,16 +111,16 @@ Cronjob performing a pull backup job
 
 .. code ::
 
-    # /etc/cron.d/btrfs-sxbackup
+    # /etc/cron.d/btrfs-pnbackup
     PATH="/usr/sbin:/usr/bin:/sbin:/bin"
-    30 2    * * *     root     btrfs-sxbackup run /backup/myhost
+    30 2    * * *     root     btrfs-pnbackup run /backup/myhost
 
 Synopsis and options
 ====================
 
 .. code ::
 
-    usage: btrfs-sxbackup [-h] [-q] [--version] [-v]
+    usage: btrfs-pnbackup [-h] [-q] [--version] [-v]
                           {init,destroy,update,run,info,transfer} ...
 
     positional arguments:
@@ -144,7 +144,7 @@ init
 
 .. code ::
 
-    usage: btrfs-sxbackup init [-h] [-sc SOURCE_CONTAINER] [-sr SOURCE_RETENTION]
+    usage: btrfs-pnbackup init [-h] [-sc SOURCE_CONTAINER] [-sr SOURCE_RETENTION]
                                [-dr DESTINATION_RETENTION] [-c]
                                source-subvolume destination-subvolume
 
@@ -179,7 +179,7 @@ run
 
 .. code ::
 
-    usage: btrfs-sxbackup run [-h] [-m [MAIL]] [-li LOG_IDENT]
+    usage: btrfs-pnbackup run [-h] [-m [MAIL]] [-li LOG_IDENT]
                               subvolume [subvolume ...]
 
     positional arguments:
@@ -191,7 +191,7 @@ run
       -m [MAIL], --mail [MAIL]
                             enables email notifications. If an email address is
                             given, it overrides the default email-recipient
-                            setting in /etc/btrfs-sxbackup.conf
+                            setting in /etc/btrfs-pnbackup.conf
       -li LOG_IDENT, --log-ident LOG_IDENT
                             log ident used for syslog logging, defaults to script
                             name
@@ -201,7 +201,7 @@ update
 
 .. code ::
 
-    usage: btrfs-sxbackup update [-h] [-sr SOURCE_RETENTION]
+    usage: btrfs-pnbackup update [-h] [-sr SOURCE_RETENTION]
                                  [-dr DESTINATION_RETENTION] [-c]
                                  subvolume [subvolume ...]
 
@@ -232,7 +232,7 @@ info
 
 .. code ::
 
-    usage: btrfs-sxbackup info [-h] subvolume [subvolume ...]
+    usage: btrfs-pnbackup info [-h] subvolume [subvolume ...]
 
     positional arguments:
       subvolume   backup job source or destination subvolume. local path or SSH
@@ -246,7 +246,7 @@ purge
 
 .. code ::
 
-    usage: btrfs-sxbackup purge [-h] [-sr SOURCE_RETENTION]
+    usage: btrfs-pnbackup purge [-h] [-sr SOURCE_RETENTION]
                                 [-dr DESTINATION_RETENTION]
                                 subvolume [subvolume ...]
 
@@ -274,7 +274,7 @@ destroy
 
 .. code ::
 
-    usage: btrfs-sxbackup destroy [-h] [--purge] subvolume [subvolume ...]
+    usage: btrfs-pnbackup destroy [-h] [--purge] subvolume [subvolume ...]
 
     positional arguments:
       subvolume   backup job source or destination subvolume. local path or SSH
@@ -289,7 +289,7 @@ transfer
 
 .. code ::
 
-    usage: btrfs-sxbackup transfer [-h] [-c]
+    usage: btrfs-pnbackup transfer [-h] [-c]
                                    source-subvolume destination-subvolume
 
     positional arguments:
