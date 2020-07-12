@@ -5,4 +5,4 @@
 # Software Foundation; either version 2 of the License, or (at your option)
 # any later version.
 
-__version__ = '0.7.0'
+__version__ = '0.7.1'

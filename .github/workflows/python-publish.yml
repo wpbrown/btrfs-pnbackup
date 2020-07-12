@@ -1,30 +1,113 @@
 name: Python Package Build
 
 on:
-  release:
-    types: [created]
-
+  push:
+    tags:        
+      - v* 
+    #branches:
+    #  - master
+    
 jobs:
-  deploy:
-
-    runs-on: ubuntu-latest
-
+  build:
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v2
       with:
-        python-version: '3.x'
+        path: source
     - name: Install dependencies
+      working-directory: source
       run: |
-        python -m pip install --upgrade pip
-        pip install setuptools wheel
-    - name: Build and publish
-      run: |
-        python setup.py bdist_wheel
-    - name: Upload a Build Artifact
+        sudo apt-get install devscripts equivs
+        mk-build-deps -i -s sudo
+    - name: Build Deb
+      working-directory: source
+      run: |  
+        debuild --no-tgz-check -uc -us
+    - name: Build Bare
+      working-directory: source
+      run: |  
+        python3 ./setup.py bdist_wheel
+    - name: Unsigned Artifacts
       uses: actions/upload-artifact@v2
       with:
-        # Artifact name
-        name: btrfs-pnbackup-dist
-        path: dist/*
+        name: unsigned
+        path: |
+          *
+          !source
+    - name: Bare Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: bare
+        path: |
+          source/dist/*
+  publish:
+    runs-on: ubuntu-20.04
+    needs: build
+    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') }}
+    steps:
+    - name: Install dependencies
+      run: |
+        curl -LO "https://raw.githubusercontent.com/rebeagle/package-delivery/master/eng/init-gpg.sh"
+        sudo apt-get install devscripts
+        curl -LO "https://raw.githubusercontent.com/rebeagle/ok.sh/master/ok.sh"
+        chmod +x "init-gpg.sh" "ok.sh"
+    - name: Unsigned Artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: unsigned
+        path: working
+    - name: Bare Artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: bare
+        path: working_bare
+    - name: Init GPG
+      env:
+        GPG_SIGNING_KEY_FINGERPRINT: 54E7BD84219E646D532E5940D38CFC1E1F5FF89C
+        SECRET_GPG_SIGNING_KEY_CONTENT: ${{ secrets.GPG_PACKAGE_SIGNING_KEY_CONTENT }}
+        SECRET_GPG_SIGNING_KEY_PASSWORD: ${{ secrets.GPG_PACKAGE_SIGNING_KEY_PASSWORD }}
+      run: |
+        ./init-gpg.sh
+    - name: Sign
+      working-directory: working
+      run: |  
+        debsign *.changes
+    - name: Signed Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: signed
+        path: "working/*"
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body: Automatic Release `${{ github.ref }}`.
+        draft: true
+        prerelease: true
+    - name: Upload Release Asset
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        UPLOAD_URL: ${{ steps.create_release.outputs.upload_url }}
+        RELEASE_ID: ${{ steps.create_release.outputs.id }}
+        REPO: ${{ github.repository }}
+      run: |
+        FILE=$(ls -1 working/*.deb)
+        URL=$(sed "s/{.*}/?name=$(basename ${FILE})/" <<< ${UPLOAD_URL})
+        ./ok.sh upload_asset "${URL}" "${FILE}"
+        FILE=$(ls -1 working_bare/*.whl)
+        URL=$(sed "s/{.*}/?name=$(basename ${FILE})/" <<< ${UPLOAD_URL})
+        ./ok.sh upload_asset "${URL}" "${FILE}"
+
+        IFS=/ read REPO_OWNER REPO_NAME <<< ${REPO}
+        ./ok.sh edit_release "${REPO_OWNER}" "${REPO_NAME}" "${RELEASE_ID}" draft=false
+    - name: Notify
+      uses: peter-evans/repository-dispatch@1708dda5703a768a0fb0ef6a7a03a0c3805ebc59
+      with:
+        token: ${{ secrets.BOT_TOKEN }}
+        repository: rebeagle/package-delivery
+        event-type: edge_release
+        client-payload: '{"repo": "${{ github.repository }}", "run_id": "${{ github.run_id }}"}'
