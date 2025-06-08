@@ -86,6 +86,11 @@ def cmd_btrfs_receive(auth: Authorization, args: argparse.Namespace):
     return ('btrfs', 'receive', '--chroot', str(args.target))
 
 
+def cmd_btrfs_send(auth: Authorization, args: argparse.Namespace):
+    auth.assert_path_allowed(args.target, PathCheckMode.SubPathOnly)
+    return ('btrfs', 'send', str(args.target))
+
+
 def cmd_btrfs_subvolume_list(auth: Authorization, args: argparse.Namespace):
     auth.assert_path_allowed(args.list_path, PathCheckMode.ExactOrSubPath)
     return ('btrfs', 'subvolume', 'list', '-o', str(args.list_path))
@@ -123,6 +128,10 @@ def main():
     btrfs_receive_parser.add_argument('-C', '--chroot')
     btrfs_receive_parser.add_argument('target', type=pathlib.Path)
     btrfs_receive_parser.set_defaults(func=cmd_btrfs_receive)
+
+    btrfs_send_parser = btrfs_subparsers.add_parser('send')
+    btrfs_send_parser.add_argument('target', type=pathlib.Path)
+    btrfs_send_parser.set_defaults(func=cmd_btrfs_send)
 
     btrfs_version_parser = btrfs_subparsers.add_parser('version')
     btrfs_version_parser.set_defaults(func=lambda _,__: ('btrfs', 'version'))
