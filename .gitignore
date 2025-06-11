@@ -6,3 +6,6 @@ dist
 build
 docs/man
 docs/sphinx/generated
+
+/result
+/flake.lock
